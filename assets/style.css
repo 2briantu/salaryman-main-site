@@ -8,10 +8,10 @@
 
   /* Where the link sits INSIDE THE VIDEO FRAME, as fractions of its
      width / height. X is the centre of the dark vertical column above the
-     pocket (frame x 1407-1474); Y is the midpoint between the windows
-     above (y ~420) and below (y ~844). Nudge to move the link. */
-  --anchor-x: 0.8336;
-  --anchor-y: 0.585;
+     pocket (frame x 1406-1474); Y is the midpoint between the windows
+     above (y ~440) and below (y ~845). Nudge to move the link. */
+  --anchor-x: 0.8333;
+  --anchor-y: 0.595;
 
   /* Link text size as a fraction of the displayed video width, so it
      scales with the footage (matches the live site: ~23.5px @ 1420px). */

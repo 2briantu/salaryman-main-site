@@ -25,8 +25,8 @@ up with the black pocket at one window size, and on phones Squarespace swaps
 to a completely different mobile grid.
 
 Now the `<video>` box always keeps the footage's 1728:1080 shape and is
-positioned so that **one fixed point of the frame** (`--anchor-x: 0.8336`,
-`--anchor-y: 0.585` — centred on the dark column above the pocket, midway
+positioned so that **one fixed point of the frame** (`--anchor-x: 0.8333`,
+`--anchor-y: 0.595` — centred on the dark column above the pocket, midway
 between the windows above and below)
 lands on one point of the screen. The link is placed on that same screen
 point, so it is pinned to the same pixels of the footage on every device.
@@ -48,7 +48,7 @@ or ultra-wide — is filled edge to edge, exactly like the original.
 
 | Variable | Default | Effect |
 |---|---|---|
-| `--anchor-x`, `--anchor-y` | `0.8336`, `0.585` | Where in the frame the link sits (fractions of width/height): the centre line of the dark column above the pocket, midway between the windows above and below. |
+| `--anchor-x`, `--anchor-y` | `0.8333`, `0.595` | Where in the frame the link sits (fractions of width/height): the centre line of the dark column above the pocket, midway between the windows above and below. |
 | `--cta-scale` | `0.01656` | Link text size relative to displayed video width. |
 | `--portrait-video-height` | `70` | Phone (portrait ≤ 500 px) zoom. `100` = fill the screen like every other size. |
 | `--cta-half` | `110px` | Minimum distance of the link's centre from the screen edge. |
