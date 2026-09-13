@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>salaryman</title>
+  <meta name="description" content="">
+  <meta property="og:site_name" content="salaryman">
+  <meta property="og:title" content="salaryman">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.salaryman.co">
+  <meta property="og:image" content="https://www.salaryman.co/assets/poster.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#000000">
+  <link rel="canonical" href="https://www.salaryman.co">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="assets/poster.jpg">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <main class="hero">
+    <div class="stage">
+      <!--
+        The video keeps its native 1728:1080 proportions and is positioned so that
+        the point (--anchor-x, --anchor-y) of the *frame* always lands on the same
+        point of the *screen*. The link is placed on that exact screen point, so it
+        stays centred in the black pocket of the footage on every viewport.
+        See assets/style.css for the maths and the tunable variables.
+      -->
+      <video class="bg" muted loop playsinline autoplay preload="metadata"
+             poster="assets/poster.jpg" aria-hidden="true" tabindex="-1">
+        <source src="assets/bg-1080.mp4" type="video/mp4">
+      </video>
+
+      <a class="cta" href="https://instagram.com/salaryman.co" target="_blank" rel="noopener">salaryman</a>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <p>ⓒ2024 salaryman - all rights reserved</p>
+  </footer>
+
+  <script>
+    (function () {
+      var v = document.querySelector('.bg');
+      if (!v) return;
+
+      // Data-saver or slow connections get the 576x360 encode (6 MB) instead of
+      // 1728x1080 (13 MB). Everyone else gets full quality — phones zoom into the
+      // footage, so the small encode would look soft there.
+      var c = navigator.connection || {};
+      var lite = c.saveData || /^(slow-2g|2g|3g)$/.test(c.effectiveType || '');
+      if (lite) {
+        var s = v.querySelector('source');
+        s.src = 'assets/bg-360.mp4';
+        v.load();
+      }
+
+      // Respect "reduce motion": leave the poster frame up instead of looping video.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        v.removeAttribute('autoplay');
+        v.pause();
+        return;
+      }
+
+      // iOS Low Power Mode blocks autoplay; retry on first touch so it's not stuck on the poster.
+      var kick = function () {
+        v.play().catch(function () {});
+        window.removeEventListener('touchstart', kick);
+      };
+      v.play().catch(function () { window.addEventListener('touchstart', kick, { passive: true }); });
+    })();
+  </script>
+</body>
+</html>

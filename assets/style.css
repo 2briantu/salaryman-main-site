@@ -1,0 +1,170 @@
+/* ------------------------------------------------------------------
+   salaryman — single-page video landing
+   ------------------------------------------------------------------ */
+
+:root {
+  /* Native proportions of the footage (1728 x 1080). */
+  --video-ar: 1.6;
+
+  /* Where the link sits INSIDE THE VIDEO FRAME, as fractions of its
+     width / height. X is the centre of the dark vertical column above the
+     pocket (frame x 1407-1474); Y is the midpoint between the windows
+     above (y ~420) and below (y ~844). Nudge to move the link. */
+  --anchor-x: 0.8336;
+  --anchor-y: 0.585;
+
+  /* Link text size as a fraction of the displayed video width, so it
+     scales with the footage (matches the live site: ~23.5px @ 1420px). */
+  --cta-scale: 0.01656;
+
+  /* Half the link's footprint + breathing room. On narrow screens the
+     anchor is pulled inward by this much so the link never clips. */
+  --cta-half: 110px;
+
+  /* PHONES ONLY (portrait, up to 500px wide): how tall the
+     video is, as a % of the screen height. 100 = fill the screen (very
+     zoomed-in). 70 shows a lot more of the building; the black bars blend
+     into the footage. Every other window fills edge to edge. */
+  --portrait-video-height: 70;
+
+  --black: #000;
+  --white: #fff;
+  --serif: "Times New Roman", Times, serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- hero ---------- */
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;          /* fallback */
+  height: 100svh;         /* stable on mobile: ignores the collapsing URL bar */
+  overflow: hidden;
+  background: var(--black);
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;   /* lets children measure it with cqw / cqh */
+  background: var(--black);
+}
+
+/* Displayed size of the video box (dw x dh) and the on-screen point
+   (ax, ay) that the frame's anchor must land on.
+
+   Default  : cover the viewport, whatever its shape or size — the video
+              is never smaller than the window in either direction.
+   Phones   : (portrait, <= 500px wide) the video is --portrait-video-height
+              % of the height, letterboxed on black, so it isn't zoomed 5x.
+
+   The anchor's screen position is clamped so the link is always fully
+   visible, even on a 320px phone. */
+.stage > * {
+  --dw: max(100cqw, calc(100cqh * var(--video-ar)));
+  --dh: calc(var(--dw) / var(--video-ar));
+  --ax: clamp(var(--cta-half), calc(var(--anchor-x) * 100cqw), calc(100cqw - var(--cta-half)));
+  --ay: clamp(40px, calc(var(--anchor-y) * 100cqh), calc(100cqh - 40px));
+}
+
+@media (orientation: portrait) and (max-width: 500px) {
+  .stage > * {
+    --dw: max(100cqw, calc(var(--portrait-video-height) * 1cqh * var(--video-ar)));
+  }
+}
+
+.bg {
+  position: absolute;
+  width: var(--dw);
+  height: var(--dh);
+  /* place the box so that frame point (anchor-x, anchor-y) == screen point (ax, ay) */
+  left: calc(var(--ax) - var(--anchor-x) * var(--dw));
+  top:  calc(var(--ay) - var(--anchor-y) * var(--dh));
+  object-fit: fill;       /* the box already has the frame's aspect ratio */
+  background: var(--black) url("poster.jpg") center / cover no-repeat;
+}
+
+/* phones are letterboxed: soften the bottom edge of the frame into the black bar */
+@media (orientation: portrait) and (max-width: 500px) {
+  .bg {
+    -webkit-mask-image: linear-gradient(#000 0, #000 94%, transparent 100%);
+            mask-image: linear-gradient(#000 0, #000 94%, transparent 100%);
+  }
+}
+
+/* ---------- the link ---------- */
+
+.cta {
+  position: absolute;
+  left: var(--ax);
+  top: var(--ay);
+  transform: translate(-50%, -50%);
+  padding: 0.45em 0.8em;             /* invisible; enlarges the tap target */
+  font: italic 400 max(15px, calc(var(--dw) * var(--cta-scale))) / 1 var(--serif);
+  color: var(--white);
+  text-decoration: none;
+  text-transform: lowercase;
+  white-space: nowrap;
+  line-height: 1;
+  opacity: 0;
+  animation: cta-in 1s ease 0.25s forwards;
+  transition: opacity 0.2s ease;
+}
+
+.cta:hover { opacity: 0.75; }
+.cta:focus-visible { outline: 1px solid var(--white); outline-offset: 4px; }
+
+@keyframes cta-in { to { opacity: 1; } }
+
+/* ---------- footer ---------- */
+
+.foot {
+  min-height: 63px;
+  display: grid;
+  place-items: center;
+  padding: 0 6vw;
+  background: var(--black);
+}
+
+.foot p {
+  margin: 0;
+  font: italic 400 clamp(10px, 0.82vw, 12px) / 1.4 var(--serif);
+  color: var(--white);
+  text-align: center;
+}
+
+/* ---------- fallback: browsers without container-query units ---------- */
+
+@supports not (width: 1cqw) {
+  .bg {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: calc(var(--anchor-x) * 100%) calc(var(--anchor-y) * 100%);
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .cta {
+    left: min(calc(var(--anchor-x) * 100%), calc(100% - var(--cta-half)));
+    top: calc(var(--anchor-y) * 100%);
+    font-size: clamp(15px, 1.66vw, 30px);
+  }
+}
+
+/* ---------- motion preference ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .cta { animation: none; opacity: 1; }
+}
